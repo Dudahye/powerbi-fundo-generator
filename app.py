@@ -5,9 +5,6 @@ import os
 st.set_page_config(layout="wide", page_title="Gerador de Fundos Power BI")
 st.title("🧩 Criador de Fundo Personalizado para Power BI")
 
-# Caminho da fonte TTF (incluir no repositório)
-FONT_PATH = "DejaVuSans.ttf"
-
 col_config, col_preview = st.columns([1, 1])
 
 with col_config:
@@ -26,29 +23,33 @@ with col_config:
     tamanho_card_texto = st.slider("🔤 Tamanho da Fonte dos Cards", 10, 50, 18)
     titulo_painel = st.text_input("📋 Título do Painel", "Limites - Insira o título")
 
-    alinhamento_padrao = st.selectbox("📌 Alinhamento padrão para todas as linhas", ["Esquerda", "Centralizado", "Direita"])
-    aplicar_todos = st.checkbox("🔁 Aplicar esse alinhamento para todas as linhas")
+    fontes_disponiveis = {
+        "Liberation Sans": "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        "DejaVu Sans": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    }
+    fonte_escolhida = st.selectbox("✒️ Fonte", list(fontes_disponiveis.keys()))
+
+    alinhamento_padrao = st.selectbox("📐 Alinhamento padrão das linhas", ["Centro", "Esquerda", "Direita"])
+    aplicar_todos = st.checkbox("✅ Usar este alinhamento em todas as linhas")
 
     n_linhas = st.slider("🔢 Número de Linhas", 1, 5, 3)
     cards_config = []
 
-    alinhamentos_linhas = []
-
     for i in range(n_linhas):
         st.markdown(f"#### Linha {i+1}")
-        alinhamento = alinhamento_padrao if aplicar_todos else st.selectbox(
-            f"🔄 Alinhamento da Linha {i+1}", ["Esquerda", "Centralizado", "Direita"], key=f"alinhamento_{i}"
-        )
-        alinhamentos_linhas.append(alinhamento)
-
         mesma_largura = st.checkbox(f"➡️ Todos os Cards da Linha {i+1} com a mesma largura", key=f"check_larg_{i}")
         mesma_altura = st.checkbox(f"⬇️ Todos os Cards da Linha {i+1} com a mesma altura", key=f"check_alt_{i}")
+        alinhamento = alinhamento_padrao if aplicar_todos else st.selectbox(f"🧭 Alinhamento da Linha {i+1}", ["Centro", "Esquerda", "Direita"], key=f"alinh_{i}")
         n_cards = st.slider(f"Número de Cards na Linha {i+1}", 1, 5, 3, key=f"linha_{i}_n_cards")
 
-        largura_comum = st.number_input(f"Largura comum para os Cards da Linha {i+1}", 100, 1000, 300, step=10, key=f"larg_comum_{i}") if mesma_largura else None
-        altura_comum = st.number_input(f"Altura comum para os Cards da Linha {i+1}", 100, 1000, 200, step=10, key=f"alt_comum_{i}") if mesma_altura else None
+        largura_comum = st.number_input(f"Largura comum (px) - Linha {i+1}", 100, 1000, 300, step=10, key=f"larg_comum_{i}") if mesma_largura else None
+        altura_comum = st.number_input(f"Altura comum (px) - Linha {i+1}", 100, 1000, 200, step=10, key=f"alt_comum_{i}") if mesma_altura else None
 
-        linha = []
+        linha = {
+            "cards": [],
+            "alinhamento": alinhamento
+        }
+
         for j in range(n_cards):
             col1, col2, col3 = st.columns(3)
             with col1:
@@ -57,20 +58,12 @@ with col_config:
                 altura_card = altura_comum if mesma_altura else st.number_input(f"Altura do Card {j+1}", 100, 1000, 200, step=10, key=f"alt_{i}_{j}")
             with col3:
                 titulo_card = st.text_input(f"Título do Card {j+1}", f"Card {j+1}", key=f"title_{i}_{j}")
-            linha.append({
+            linha["cards"].append({
                 "largura": largura_card,
                 "altura": altura_card,
                 "titulo": titulo_card
             })
         cards_config.append(linha)
-
-def carregar_fonte(tamanho):
-    try:
-        if os.path.exists(FONT_PATH):
-            return ImageFont.truetype(FONT_PATH, tamanho)
-    except:
-        pass
-    return ImageFont.load_default()
 
 def gerar_imagem():
     img = Image.new("RGB", (largura, altura), color=cor_fundo_inicio)
@@ -84,8 +77,13 @@ def gerar_imagem():
         b = b1 + (b2 - b1) * y // altura
         draw.line([(0, y), (largura, y)], fill=(r, g, b))
 
-    fonte_titulo = carregar_fonte(tamanho_titulo)
-    fonte_card = carregar_fonte(tamanho_card_texto)
+    try:
+        path_fonte = fontes_disponiveis[fonte_escolhida]
+        fonte_titulo = ImageFont.truetype(path_fonte, tamanho_titulo)
+        fonte_card = ImageFont.truetype(path_fonte, tamanho_card_texto)
+    except:
+        fonte_titulo = ImageFont.load_default()
+        fonte_card = ImageFont.load_default()
 
     bbox = draw.textbbox((0, 0), titulo_painel, font=fonte_titulo)
     largura_texto = bbox[2] - bbox[0]
@@ -93,20 +91,19 @@ def gerar_imagem():
     draw.text(((largura - largura_texto) / 2, 30), titulo_painel, font=fonte_titulo, fill=cor_titulo)
 
     y_atual = 100 + altura_texto
-    for i, linha in enumerate(cards_config):
-        alinhamento = alinhamentos_linhas[i]
-        total_largura = sum(card["largura"] for card in linha)
-        total_espaco = espaco_horizontal * (len(linha) - 1)
-        largura_linha = total_largura + total_espaco
+    for linha in cards_config:
+        total_largura = sum(card["largura"] for card in linha["cards"])
+        num_cards = len(linha["cards"])
+        alinhamento = linha["alinhamento"]
 
-        if alinhamento == "Centralizado":
-            x_atual = (largura - largura_linha) // 2
+        if alinhamento == "Centro":
+            x_atual = (largura - total_largura - espaco_horizontal * (num_cards - 1)) // 2
         elif alinhamento == "Direita":
-            x_atual = largura - largura_linha - 50
+            x_atual = largura - total_largura - 50 - espaco_horizontal * (num_cards - 1)
         else:
             x_atual = 50
 
-        for card in linha:
+        for card in linha["cards"]:
             x0 = x_atual
             y0 = y_atual
             x1 = x0 + card["largura"]
@@ -124,7 +121,8 @@ with col_preview:
     st.image(img_preview, use_container_width=True)
 
 if st.button("🚀 Gerar e Baixar Imagem Final"):
-    output_path = "fundo_powerbi_customizado.png"
+    output_path = "/mnt/data/fundo_powerbi_customizado.png"
+    os.makedirs("/mnt/data", exist_ok=True)
     img_preview.save(output_path)
-    with open(output_path, "rb") as f:
-        st.download_button("📥 Baixar imagem", data=f, file_name="fundo_powerbi_customizado.png")
+    st.success("✅ Imagem gerada com sucesso!")
+    st.download_button("📥 Baixar imagem", data=open(output_path, "rb"), file_name="fundo_powerbi_customizado.png")
