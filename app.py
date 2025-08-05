@@ -21,7 +21,7 @@ with col_config:
 
     tamanho_titulo = st.slider("🔠 Tamanho da Fonte do Título", 20, 100, 38)
     tamanho_card_texto = st.slider("🔤 Tamanho da Fonte dos Cards", 10, 50, 18)
-    titulo_painel = st.text_input("📋 Título do Painel", "Limites - Insira o título")
+    titulo_painel = st.text_input("📋 Título do Painel", "Insira o título")
 
     fontes_disponiveis = {
         "Liberation Sans": "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
