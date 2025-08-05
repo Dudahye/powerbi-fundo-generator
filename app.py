@@ -121,8 +121,8 @@ with col_preview:
     st.image(img_preview, use_container_width=True)
 
 if st.button("🚀 Gerar e Baixar Imagem Final"):
-    output_path = "/mnt/data/fundo_powerbi_customizado.png"
-    os.makedirs("/mnt/data", exist_ok=True)
+    output_path = "fundo_powerbi_customizado.png"  # Salva na raiz do projeto
     img_preview.save(output_path)
     st.success("✅ Imagem gerada com sucesso!")
-    st.download_button("📥 Baixar imagem", data=open(output_path, "rb"), file_name="fundo_powerbi_customizado.png")
+    with open(output_path, "rb") as f:
+        st.download_button("📥 Baixar imagem", data=f, file_name="fundo_powerbi_customizado.png")
