@@ -26,9 +26,7 @@ with col_config:
     fontes_disponiveis = {
     "DejaVu Sans": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
     "DejaVu Sans Bold": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-    "DejaVu Sans Oblique": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf",
     "DejaVu Serif": "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf",
-    "DejaVu Serif Italic": "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Italic.ttf",
     "DejaVu Sans Mono": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
     }
     fonte_escolhida = st.selectbox("✒️ Fonte", list(fontes_disponiveis.keys()))
