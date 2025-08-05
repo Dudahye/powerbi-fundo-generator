@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageColor
 import os
 
 st.set_page_config(layout="wide", page_title="Gerador de Fundos Power BI")
-st.title("🧩 Criador de Fundo Personalizado para Power BI")
+st.title("🧩 Gerador de Fundo Personalizado para Power BI")
 
 col_config, col_preview = st.columns([1, 1])
 
