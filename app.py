@@ -125,4 +125,3 @@ with open("app.py", "w") as f:
 # ✅ Roda o Streamlit com ngrok
 public_url = ngrok.connect(8501)
 print(f"🌐 Acesse o app aqui: {public_url}")
-!streamlit run app.py & sleep 3
