@@ -24,7 +24,12 @@ with col_config:
     titulo_painel = st.text_input("📋 Título do Painel", "Insira o título")
 
     fontes_disponiveis = {
-        "DejaVu Sans": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    "DejaVu Sans": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    "DejaVu Serif": "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf",
+    "DejaVu Sans Bold": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+    "Liberation Sans": "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+    "Liberation Serif": "/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf",
+    "Liberation Mono": "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf"
     }
     fonte_escolhida = st.selectbox("✒️ Fonte", list(fontes_disponiveis.keys()))
 
