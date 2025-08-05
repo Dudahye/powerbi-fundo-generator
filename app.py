@@ -1,5 +1,3 @@
-# ✅ Instala dependências
-!pip install streamlit pyngrok pillow -q
 
 # ✅ Autenticação do ngrok
 from pyngrok import ngrok
