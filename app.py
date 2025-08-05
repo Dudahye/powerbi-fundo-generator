@@ -24,7 +24,6 @@ with col_config:
     titulo_painel = st.text_input("📋 Título do Painel", "Insira o título")
 
     fontes_disponiveis = {
-        "Liberation Sans": "/usr/share/fonts/truetype/liberation/LiberationSans.ttf",
         "DejaVu Sans": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
     }
     fonte_escolhida = st.selectbox("✒️ Fonte", list(fontes_disponiveis.keys()))
